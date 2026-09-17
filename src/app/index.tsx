@@ -1,98 +1,107 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, View, StyleSheet, FlatList, Image, TouchableOpacity, TextInput } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@react-native-vector-icons/ionicons"
+import { Checkbox } from 'expo-checkbox';
+import { useState } from 'react';
+ 
+export default function Index() {
+  const DATA = [
+    {
+      id: 1,
+      title: 'todo 1',
+      isDone: false,
+    },
+    {
+      id: 2,
+      title: 'todo 2',
+      isDone: true,
+    },
+    {
+      id: 3,
+      title: 'todo 3',
+      isDone: false,
+    },
+  ]
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
   return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => {alert('menu clicked!')}}>
+          <Ionicons name='menu' size={24} color={'333'}/>
+        </TouchableOpacity>
 
-export default function HomeScreen() {
-  return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
+        <TouchableOpacity onPress={() => {alert('profile clicked!')}}>
+          <Image 
+          source={{uri: 'https://i.pinimg.com/736x/cf/62/16/cf6216fac15f7562cc2693d6549e2597.jpg'}} 
+          style={{width: 40, height: 40, borderRadius: 20}}
           />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+        </TouchableOpacity>
+      </View>
 
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+      <View style={styles.searchBar}>
+        <Ionicons name='search' size={24} color={'333'} />
+        <TextInput placeholder='search' style={styles.searchInput} clearButtonMode='always'/>
+      </View>
+
+      <FlatList
+        data={DATA}
+        keyExtractor={(item) => item.id.toString()} 
+        renderItem={({item}) => (
+          <View style={styles.todoContainer}>
+            <View style={styles.todoInfoContainer}>
+              <Checkbox value={item.isDone} />
+              <Text style={[styles.todoText, item.isDone && {textDecorationLine: 'line-through'}]}>{item.title}</Text>
+            </View>
+            <TouchableOpacity onPress={() => {alert('delete item ' + item.id)}}>
+              <Ionicons name="trash" size={24} color={'#fe6565'} />
+            </TouchableOpacity>
+          </View>
+        )}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    paddingHorizontal: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  header: {
     flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
+    marginBottom: 20,
   },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
+  searchBar: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 10,
+    gap: 10,
+    marginBottom: 10,
+  },
+  searchInput: {
     flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
+    fontSize: 16,
+    color: '#333'
   },
-  title: {
-    textAlign: 'center',
+  todoContainer: {
+    backgroundColor: '#fff',
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
-  code: {
-    textTransform: 'uppercase',
+  todoInfoContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
   },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
+  todoText: {
+    fontSize: 16,
+    color: '#333',
   },
 });
