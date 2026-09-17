@@ -1,8 +1,13 @@
-import { Text, View, StyleSheet, FlatList, Image, TouchableOpacity, TextInput } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@react-native-vector-icons/ionicons"
+import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { Checkbox } from 'expo-checkbox';
-import { useState } from 'react';
+import { FlatList, Image, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+
+type ToDoType={
+  id: number;
+  title: string;
+  isDone: boolean;
+}
  
 export default function Index() {
   const DATA = [
@@ -47,20 +52,34 @@ export default function Index() {
         data={DATA}
         keyExtractor={(item) => item.id.toString()} 
         renderItem={({item}) => (
-          <View style={styles.todoContainer}>
-            <View style={styles.todoInfoContainer}>
-              <Checkbox value={item.isDone} />
-              <Text style={[styles.todoText, item.isDone && {textDecorationLine: 'line-through'}]}>{item.title}</Text>
-            </View>
-            <TouchableOpacity onPress={() => {alert('delete item ' + item.id)}}>
-              <Ionicons name="trash" size={24} color={'#fe6565'} />
-            </TouchableOpacity>
-          </View>
+          <ToDoItem todo={item}/>
         )}
       />
+
+      <KeyboardAvoidingView style={styles.footer} behavior="padding" keyboardVerticalOffset={10}>
+        <TextInput placeholder='add new task' style={styles.newTaskInput}/>
+        <TouchableOpacity onPress={() => {}} style={styles.addButton}>
+          <Ionicons name="add" size={34} color={'#fff'}/>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
+
+const ToDoItem = ({todo}:{todo:ToDoType}) => (
+  <View style={styles.todoContainer}>
+    <View style={styles.todoInfoContainer}>
+      <Checkbox 
+        value={todo.isDone} 
+        color={todo.isDone ? '#93ffbb' : undefined}
+      />
+      <Text style={[styles.todoText, todo.isDone && {textDecorationLine: 'line-through'}]}>{todo.title}</Text>
+    </View>
+    <TouchableOpacity onPress={() => {alert('delete item ' + todo.id)}}>
+      <Ionicons name="trash" size={24} color={'#fe6565'} />
+    </TouchableOpacity>
+  </View>
+)
 
 const styles = StyleSheet.create({
   container: {
@@ -103,5 +122,25 @@ const styles = StyleSheet.create({
   todoText: {
     fontSize: 16,
     color: '#333',
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+
+  },
+  newTaskInput: {
+    backgroundColor: '#fff',
+    flex: 1,
+    padding: 16,
+    borderRadius: 10,
+    fontSize: 16,
+    color: '#333',
+  },
+  addButton: {
+    backgroundColor: '#93ffbb',
+    padding: 8,
+    borderRadius: 10,
+    marginLeft: 20,
   },
 });
