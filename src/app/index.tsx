@@ -1,5 +1,6 @@
 import { Ionicons } from "@react-native-vector-icons/ionicons";
 import { Checkbox } from 'expo-checkbox';
+import { useState } from "react";
 import { FlatList, Image, KeyboardAvoidingView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -28,6 +29,20 @@ export default function Index() {
     },
   ]
 
+  const [todos, setTodos] = useState<ToDoType[]>(DATA);
+  const [todoText, setTodoText] = useState<string>('');
+
+  const addTodo = () => {
+    const newTodo = {
+      id: Math.random(),
+      title: todoText,
+      isDone: false,
+    }
+
+    setTodos([newTodo, ...todos]);
+    setTodoText('');
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -49,7 +64,7 @@ export default function Index() {
       </View>
 
       <FlatList
-        data={DATA}
+        data={todos}
         keyExtractor={(item) => item.id.toString()} 
         renderItem={({item}) => (
           <ToDoItem todo={item}/>
@@ -57,8 +72,8 @@ export default function Index() {
       />
 
       <KeyboardAvoidingView style={styles.footer} behavior="padding" keyboardVerticalOffset={10}>
-        <TextInput placeholder='add new task' style={styles.newTaskInput}/>
-        <TouchableOpacity onPress={() => {}} style={styles.addButton}>
+        <TextInput placeholder='add new task' value={todoText} onChangeText={(text) => setTodoText(text)} style={styles.newTaskInput} autoCorrect={false}/>
+        <TouchableOpacity onPress={() => addTodo()} style={styles.addButton}>
           <Ionicons name="add" size={34} color={'#fff'}/>
         </TouchableOpacity>
       </KeyboardAvoidingView>
